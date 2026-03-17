@@ -1,8 +1,11 @@
 import typer
 import os
+import json
+import requests
 from rich.panel import Panel
+from rich.table import Table
 
-from utils import console, CONTEXT_DIR
+from utils import console, CONTEXT_DIR, MANIFEST_FILE
 from scraper import extrair_conteudo
 from scanner import escanear_projeto
 
@@ -51,6 +54,54 @@ def rule(texto: str):
         f.write(f"- {texto}\n")
 
     console.print(f"[bold green]✔ Regra anotada com sucesso![/bold green] A IA agora sabe que: [italic]'{texto}'[/italic]")
+
+@app.command()
+def check():
+    """ Verifica se as documentações salvas ainda estão atualizadas em relação à web. """
+    verificar_contexto()
+    
+    if not os.path.exists(MANIFEST_FILE):
+        console.print("[bold yellow]Aviso:[/bold yellow] Nenhum manifesto encontrado. Rode [bold cyan]python main.py scrape <url>[/bold cyan] primeiro.")
+        return
+
+    with open(MANIFEST_FILE, "r", encoding="utf-8") as f:
+        try:
+            dados = json.load(f)
+        except json.JSONDecodeError:
+            console.print("[bold red]Erro:[/bold red] Arquivo manifest.json corrompido.")
+            return
+
+    table = Table(title="🔍 Verificação de Sincronia de Contexto", style="magenta")
+    table.add_column("URL", style="blue")
+    table.add_column("Status", justify="center")
+    table.add_column("Última Captura", style="green")
+
+    with console.status("[bold yellow]Checando servidores remotos (via HEAD)...[/bold yellow]", spinner="dots"):
+        for url, info in dados.items():
+            try:
+                res = requests.head(url, headers={"User-Agent": "Mozilla/5.0"}, timeout=5)
+                novo_etag = res.headers.get('ETag')
+                nova_data = res.headers.get('Last-Modified')
+                
+                desatualizado = False
+                # Só acusa desatualizado se o servidor forneceu o dado antes E agora ele está diferente
+                if info.get('etag') and novo_etag and novo_etag != info['etag']:
+                    desatualizado = True
+                elif info.get('last_modified') and nova_data and nova_data != info['last_modified']:
+                    desatualizado = True
+                
+                if desatualizado:
+                    status = "[bold red]🔄 DESATUALIZADO[/bold red]"
+                else:
+                    status = "[bold green]✅ EM DIA[/bold green]"
+                
+            except Exception:
+                status = "[bold yellow]❓ OFFLINE/ERRO[/bold yellow]"
+            
+            table.add_row(url, status, info.get('ultima_captura', 'Desconhecido'))
+
+    console.print(table)
+    console.print("\n[italic]Dica: Se o status for [bold red]DESATUALIZADO[/bold red], rode o comando [bold cyan]scrape <url>[/bold cyan] novamente para atualizar seu contexto local.[/italic]")
 
 if __name__ == "__main__":
     console.print("[bold magenta]⚡ BrainFeed CLI - Contexto para IAs[/bold magenta]")

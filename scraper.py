@@ -2,7 +2,7 @@ import os
 import requests
 from bs4 import BeautifulSoup
 from markdownify import markdownify as md
-from utils import console, CONTEXT_DIR, gerar_nome_arquivo
+from utils import console, CONTEXT_DIR, gerar_nome_arquivo, salvar_no_manifesto
 
 def extrair_conteudo(url: str):
     with console.status("[bold yellow]Baixando e processando a página...[/bold yellow]", spinner="dots"):
@@ -10,6 +10,10 @@ def extrair_conteudo(url: str):
             headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
             response = requests.get(url, headers=headers)
             response.raise_for_status()
+
+            # Capturando os headers para monitoramento de versão
+            etag = response.headers.get('ETag')
+            last_modified = response.headers.get('Last-Modified')
 
             soup = BeautifulSoup(response.text, "html.parser")
 
@@ -30,11 +34,14 @@ def extrair_conteudo(url: str):
                 f.write(f"\n\n")
                 f.write(markdown_puro)
 
+            # Salva no manifesto para o comando 'check'
+            salvar_no_manifesto(url, nome_arquivo, etag, last_modified)
+
             console.print(f"[bold green]✔ Extração concluída![/bold green] Arquivo salvo em: [bold cyan]{caminho_arquivo}[/bold cyan]")
             return True
 
         except requests.exceptions.RequestException as e:
-            console.print(f"[bold red]Erro de conexão:[/bold red] Não foi acessar a URL.\nDetalhes: {e}")
+            console.print(f"[bold red]Erro de conexão:[/bold red] Não foi possível acessar a URL.\nDetalhes: {e}")
         except Exception as e:
             console.print(f"[bold red]Erro inesperado:[/bold red] {e}")
         return False
