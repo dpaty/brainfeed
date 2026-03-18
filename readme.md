@@ -30,5 +30,83 @@ Certifique-se de ter o Python 3 instalado na sua máquina.
 
 1. Clone este repositório:
    ```bash
-   git clone https://github.com/dpaty/brainfeed.git
+   git clone [https://github.com/dpaty/brainfeed.git](https://github.com/dpaty/brainfeed.git)
    cd brainfeed
+   ```
+
+2. Crie e ative um ambiente virtual (recomendado):
+   ```bash
+   python -m venv venv
+   # No Windows:
+   venv\Scripts\activate
+   # No Linux/Mac:
+   source venv/bin/activate
+   ```
+
+3. Instale as dependências:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+## 🛠️ Como Usar
+
+O BrainFeed possui uma interface de terminal (CLI) rica e intuitiva. 
+
+### 1. Inicializar o projeto
+Cria a pasta `.brainfeed` na raiz do seu projeto.
+```bash
+python main.py init
+```
+
+### 2. Escanear a Stack Tecnológica
+Analisa o projeto e gera o arquivo `stack_context.md` blindando as versões para a IA.
+```bash
+python main.py scan
+```
+
+### 3. Extrair Documentação da Web
+Baixa e converte qualquer página web para Markdown.
+```bash
+python main.py scrape [https://docs.exemplo.com/api](https://docs.exemplo.com/api)
+```
+
+### 4. Monitorar a Saúde do Contexto
+Verifica rapidamente se alguma das documentações que você baixou foi atualizada na web.
+```bash
+python main.py check
+```
+
+### 5. Adicionar Regras do Projeto (Integração SKILL.md)
+Adiciona diretrizes rápidas na sua "Bíblia do Projeto" e gera automaticamente o arquivo `SKILL.md` para os Agentes de IA lerem na raiz do repositório.
+```bash
+python main.py rule "Sempre use tipagem estática nas funções em Python."
+```
+
+## 🏗️ Arquitetura do Projeto
+
+O projeto foi construído de forma modular para facilitar a manutenção e escalabilidade:
+
+```text
+brainfeed/
+├── .brainfeed/    # O "cérebro" gerado com seus arquivos .md e manifest.json
+├── main.py        # Ponto de entrada da CLI (Typer)
+├── scanner.py     # Lógica de detecção de stack (Python, Node.js, Go)
+├── scraper.py     # Lógica de extração e conversão Web -> Markdown
+├── utils.py       # Configurações globais e funções utilitárias
+└── SKILL.md       # Arquivo exportado com as regras para Agentes Autônomos
+```
+
+## 🤝 Contribuindo
+
+Contribuições são muito bem-vindas! Quer adicionar suporte a novas linguagens no scanner ou melhorar o scraper? 
+
+1. Faça um Fork do projeto
+2. Crie sua Feature Branch (`git checkout -b feature/NovaFuncionalidade`)
+3. Faça o Commit de suas mudanças (`git commit -m 'feat: Adiciona NovaFuncionalidade'`)
+4. Faça o Push para a Branch (`git push origin feature/NovaFuncionalidade`)
+5. Abra um Pull Request
+
+---
+<div align="center">
+  Desenvolvido com ☕ e 🧠 por <a href="https://github.com/dpaty">Dior Intelligence</a>.
+</div>
