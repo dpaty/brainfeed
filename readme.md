@@ -21,7 +21,8 @@ Enquanto outras ferramentas funcionam como bibliotecas estáticas, o BrainFeed a
 
 - 🕷️ **Scraper Sob Demanda (`scrape`):** Precisa usar uma biblioteca nova? Passe a URL da documentação e o BrainFeed extrai o texto, limpa o "lixo visual" (menus, rodapés, scripts) e gera um arquivo Markdown limpo e perfeito para a sua IA consumir.
 - 🔍 **Auto-Scan Automático (`scan`):** A ferramenta lê o seu `package.json` (Node.JS/TS), `requirements.txt`/`pyproject.toml` (Python) ou `go.mod` (Go), identifica todas as suas dependências e versões, e gera um manual rigoroso para a IA não errar as versões do seu projeto.
-- 📜 **Bíblia do Projeto Local (`rule`):** Crie uma memória local com as regras de negócio e arquitetura do seu time. A IA vai ler suas regras antes de codar e gerará o código exatamente no seu padrão.
+- 📜 **Bíblia do Projeto Local (`rule`):** Crie uma memória local com as regras de negócio e arquitetura do seu time. O BrainFeed exporta automaticamente um arquivo `SKILL.md` na raiz do projeto, garantindo integração nativa com Agentes Autônomos.
+- 🔄 **Monitoramento Vivo (`check`):** Compara as assinaturas HTTP (ETag/Last-Modified) das documentações salvas com os servidores originais e avisa se a sua IA está prestes a usar uma API desatualizada.
 
 ## 🚀 Como Instalar
 
