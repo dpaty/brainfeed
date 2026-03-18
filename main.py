@@ -41,20 +41,45 @@ def scan():
 
 @app.command()
 def rule(texto: str):
-    """ Adiciona uma 'regra de ouro' do projeto para o agente de IA seguir. """
+    """ Adiciona uma 'regra de ouro' do projeto e sincroniza com o padrão SKILL.md """
     verificar_contexto()
+    
+    # 1. Salva na memória interna do BrainFeed
     rules_file = os.path.join(CONTEXT_DIR, "project_rules.md")
-
+    
     if not os.path.exists(rules_file):
         with open(rules_file, "w", encoding="utf-8") as f:
             f.write("# 📜 Regras de Ouro do Projeto\n\n")
-            f.write("> **Instrução para a IA:** Leia e aplique rigorosamente as regras abaixo ao gerar ou modificar código neste repositório.\n\n")
+            f.write("> **Instrução para a IA:** Leia e aplique rigorosamente as regras abaixo ao gerar ou modificar código.\n\n")
 
     with open(rules_file, "a", encoding="utf-8") as f:
         f.write(f"- {texto}\n")
 
-    console.print(f"[bold green]✔ Regra anotada com sucesso![/bold green] A IA agora sabe que: [italic]'{texto}'[/italic]")
+    # 2. Exporta/Atualiza o arquivo SKILL.md na raiz do projeto
+    skill_file = "SKILL.md"
+    
+    # Lemos todas as regras que já existem
+    with open(rules_file, "r", encoding="utf-8") as f:
+        todas_as_regras = f.read()
 
+    # Montamos o arquivo no padrão estruturado (com cabeçalho YAML)
+    conteudo_skill = f"""---
+name: Regras Locais (BrainFeed)
+description: Contexto hiper-local e regras de negócio geradas automaticamente pelo BrainFeed.
+---
+
+{todas_as_regras}
+
+---
+> 🧠 **Nota para o Agente de IA:** Este repositório utiliza o BrainFeed. 
+> Sempre consulte os arquivos `.md` dentro da pasta `.brainfeed/` para usar a sintaxe mais atualizada das APIs e a stack correta deste projeto.
+"""
+    
+    with open(skill_file, "w", encoding="utf-8") as f:
+        f.write(conteudo_skill)
+
+    console.print(f"[bold green]✔ Regra anotada com sucesso![/bold green] A IA agora sabe que: [italic]'{texto}'[/italic]")
+    console.print(f"✨ [bold cyan]SKILL.md[/bold cyan] gerado/atualizado na raiz do projeto para integração com Agentes Autônomos!")
 @app.command()
 def check():
     """ Verifica se as documentações salvas ainda estão atualizadas em relação à web. """
