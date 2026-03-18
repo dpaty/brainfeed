@@ -30,5 +30,5 @@ Certifique-se de ter o Python 3 instalado na sua máquina.
 
 1. Clone este repositório:
    ```bash
-   git clone [https://github.com/dpaty/brainfeed.git](https://github.com/dpaty/brainfeed.git)
+   git clone https://github.com/dpaty/brainfeed.git
    cd brainfeed
